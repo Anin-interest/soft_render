@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Translation Files">
+      <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
+      <Extensions>ts</Extensions>
+    </Filter>
+    <Filter Include="form">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+    </Filter>
+    <Filter Include="resource">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>qrc;rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="basic">
+      <UniqueIdentifier>{08b9b3c2-49e0-4318-aff4-7e577c8a1bf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="framework">
+      <UniqueIdentifier>{3364a8ba-6eff-4ee3-b4f1-2ce4deae5c81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render">
+      <UniqueIdentifier>{a5bb5207-49ec-4948-adba-a8314d0bbf98}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="mainwindow.qrc">
+      <Filter>resource</Filter>
+    </QtRcc>
+    <QtUic Include="mainwindow.ui">
+      <Filter>form</Filter>
+    </QtUic>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="mainwindow.cpp">
+      <Filter>framework</Filter>
+    </ClCompile>
+    <ClCompile Include="matrix.cpp">
+      <Filter>basic</Filter>
+    </ClCompile>
+    <ClCompile Include="vector2.cpp">
+      <Filter>basic</Filter>
+    </ClCompile>
+    <ClCompile Include="vector3.cpp">
+      <Filter>basic</Filter>
+    </ClCompile>
+    <ClCompile Include="vector4.cpp">
+      <Filter>basic</Filter>
+    </ClCompile>
+    <ClCompile Include="pipeline.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="polygon.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="renderroute.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="framebuffer.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="basicshader.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="mainwindow.h">
+      <Filter>framework</Filter>
+    </QtMoc>
+    <QtMoc Include="renderroute.h">
+      <Filter>render</Filter>
+    </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="matrix.h">
+      <Filter>basic</Filter>
+    </ClInclude>
+    <ClInclude Include="vector2.h">
+      <Filter>basic</Filter>
+    </ClInclude>
+    <ClInclude Include="vector3.h">
+      <Filter>basic</Filter>
+    </ClInclude>
+    <ClInclude Include="vector4.h">
+      <Filter>basic</Filter>
+    </ClInclude>
+    <ClInclude Include="pipeline.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="polygon.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="shader.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="framebuffer.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="basicshader.h">
+      <Filter>render</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
