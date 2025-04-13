@@ -1,19 +1,17 @@
 #pragma once
-#include <vector>
-#include "vector2.h"
 #include "vector4.h"
 
 class Vertex
 {
 public:
-    Vector4D position;
-    Vector4D color;
-    Vector2D texcoord;
-    Vector3D normal;
+    Vector4 position;
+    Vector4 color;
+    Vector2 texcoord;
+    Vector3 normal;
 
     Vertex() {}
     ~Vertex() {}
-    Vertex(Vector4D pos, Vector4D col, Vector2D tex, Vector3D nor) :
+    Vertex(Vector4 pos, Vector4 col, Vector2 tex, Vector3 nor) :
         position(pos), color(col), texcoord(tex), normal(nor) {
     }
     Vertex(const Vertex& ver) :
@@ -26,23 +24,21 @@ public:
 class V2F
 {
 public:
-	int x, y;
-	//int textureID;
-    Vector4D posM2W;
-    Vector4D posV2P;
-    Vector2D texcoord;
-    Vector3D normal;
-    Vector4D color;
-    double oneDivZ;
+	int textureID;
+	Vector4 posM2W; // Model to World
+	Vector4 posV2P; // View to Projection
+    Vector2 texcoord;
+    Vector3 normal;
+    Vector4 color;
+    float oneDivZ;
 
-    V2F() {}
-    V2F(Vector4D pMW, Vector4D pVP, Vector2D tex, Vector3D nor, Vector4D col, double oZ) :
+    V2F() = default;
+    V2F(Vector4 pMW, Vector4 pVP, Vector2 tex, Vector3 nor, Vector4 col, float oZ) :
         posM2W(pMW), posV2P(pVP), texcoord(tex), normal(nor), color(col), oneDivZ(oZ) {
+		textureID = -1;
     }
     V2F(const V2F& ver) :
-		x(ver.x),
-		y(ver.y),
-		//textureID(ver.textureID),
+		textureID(ver.textureID),
         posM2W(ver.posM2W),
         posV2P(ver.posV2P),
         texcoord(ver.texcoord),
@@ -50,26 +46,24 @@ public:
         color(ver.color),
         oneDivZ(ver.oneDivZ) {
     }
-
-    V2F lerp(const V2F& v1, const V2F& v2, double weight);
 };
 
 class Mesh
 {
 public:
     std::vector<Vertex> vertices;
-    std::vector<unsigned int> index;
+    std::vector<unsigned int> indices;
 
-    Mesh() {}
-    ~Mesh() {}
+	Mesh() = default;
+    ~Mesh() = default;
 
-    Mesh(const Mesh& msh) :vertices(msh.vertices), index(msh.index) {}
+    Mesh(const Mesh& msh) :vertices(msh.vertices), indices(msh.indices) {}
     Mesh& operator=(const Mesh& msh);
     void setVertices(Vertex* v, int count);
-    void setIndex(int* i, int count);
+    void setIndices(int* i, int count);
 
-    void triangle(Vector3D& v1, Vector3D& v2, Vector3D& v3);
-    //void pyramid();
-    //void cube(double width, double height, double depth, int id, Vector4D pos);
-    //void plane(double width, double height, int id, Vector4D pos);
+    void triangle(Vector3& v1, Vector3& v2, Vector3& v3);
+    void pyramid();
+    void asBox(float width, float height, float depth);
+    //void plane(float width, float height, int id, Vector4 pos);
 };

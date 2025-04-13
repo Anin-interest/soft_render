@@ -1,31 +1,45 @@
-class Vector2D
+#pragma once
+#include "utils.h"
+
+class Vector2
 {
 public:
-    float x, y;
-public:
-    Vector2D() :x(0.0f), y(0.0f) {}
-    Vector2D(float tX, float tY) :x(tX), y(tY) {}
-    Vector2D(const Vector2D& vec) :x(vec.x), y(vec.y) {}
-    ~Vector2D() {}
+	float x, y;
 
-    void set(float tX, float tY);
-    void setX(float tX);
-    void setY(float tY);
-    float magnitude();
-    Vector2D getNormalize();
-    void normalize();
+	// constructors
+	Vector2() :x(0), y(0) {};
+	Vector2(float x, float y) : x(x), y(y) {}
+	Vector2(const float* rhs) :x(*rhs), y((*rhs) + 1) {}
+	Vector2(const Vector2& rhs) :x(rhs.x), y(rhs.y) {}
+	~Vector2() = default;
 
-    Vector2D operator+(const Vector2D& vec);
-    Vector2D operator-(const Vector2D& vec);
-    Vector2D operator*(const float k);
-    Vector2D operator/(const float k);
-    void operator+=(const Vector2D& vec);
-    void operator-=(const Vector2D& vec);
-    void operator*=(const float k);
-    void operator/=(const float k);
-    Vector2D operator+() const;
-    Vector2D operator-() const;
+	// normalization
+	void normalize();
+	Vector2 getNormalize()const;
+	// length calculation
+	float length() const { return static_cast<float>(sqrt(x * x + y * y)); }
+	float squaredlength()const { return static_cast<float>(x * x + y * y); }
+	// linear interpolation
+	Vector2 lerp(const Vector2& v2, const float weight)const { return (*this) * (1.0f - weight) + v2 * weight; }
+	Vector2 quadraticinterpolate(const Vector2& v2, const Vector2& v3, const float weight) const
+	{
+		return (*this) * (1.0f - weight) * (1.0f - weight) + v2 * 2.0f * weight * (1.0f - weight) + v3 * weight * weight;
+	}
 
-    Vector2D lerp(const Vector2D& vec, float weight) const;
-	Vector2D lerp(const Vector2D& vec1, const Vector2D& vec2, float weight) const;
+	// overloaded operators
+	Vector2 operator+(const Vector2& rhs) const { return Vector2(x + rhs.x, y + rhs.y); }
+	Vector2 operator-(const Vector2& rhs) const { return Vector2(x - rhs.x, y - rhs.y); }
+	Vector2 operator*(const float rhs) const { return Vector2(x * rhs, y * rhs); }
+	Vector2 operator/(const float rhs) const { return equal(rhs, 0.0) ? Vector2(0.0f, 0.0f) : Vector2(x / rhs, y / rhs); }
+
+	bool operator==(const Vector2& rhs) const { return (equal(x, rhs.x) && equal(y, rhs.y)); }
+	bool operator!=(const Vector2& rhs) const { return !((*this) == rhs); }
+
+	void operator+=(const Vector2& rhs) { x += rhs.x;	y += rhs.y; }
+	void operator-=(const Vector2& rhs) { x -= rhs.x;	y -= rhs.y; }
+	void operator*=(const float rhs) { x *= rhs; y *= rhs; }
+	void operator/=(const float rhs) { if (!equal(rhs, 0.0)) { x /= rhs; y /= rhs; } }
+
+	Vector2 operator-() const { return Vector2(-x, -y); }
+	Vector2 operator+() const { return *this; }
 };

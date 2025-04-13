@@ -1,38 +1,51 @@
 #pragma once
 #include "vector3.h"
 
-class Vector4D
+class Vector4
 {
 public:
     float x, y, z, w;
-public:
-    Vector4D() :x(0.0f), y(0.0f), z(0.0f), w(0.0f) {}
-    Vector4D(float tX, float tY, float tZ, float tW) :x(tX), y(tY), z(tZ), w(tW) {}
-    Vector4D(const Vector4D& vec) :x(vec.x), y(vec.y), z(vec.z), w(vec.w) {}
-    ~Vector4D() {}
 
-    void set(float tX, float tY, float tZ, float tW);
-    void setX(float tX);
-    void setY(float tY);
-    void setZ(float tZ);
-    void setW(float tW);
-    float magnitude();
-    Vector4D getNormalize();
+    // constructors
+    Vector4() :x(0.0f), y(0.0f), z(0.0f), w(0.0f) {}
+    Vector4(float newX, float newY, float newZ, float newW) :x(newX), y(newY), z(newZ), w(newW) {}
+    Vector4(const float* rhs) :x(*rhs), y(*(rhs + 1)), z(*(rhs + 2)), w(*(rhs + 3)) {}
+    Vector4(const Vector4& rhs) :x(rhs.x), y(rhs.y), z(rhs.z), w(rhs.w) {}
+    Vector4(const Vector3& rhs) : x(rhs.x), y(rhs.y), z(rhs.z), w(1.0f) {}
+    ~Vector4() = default;
+
+    // normalization
     void normalize();
+    Vector4 getNormalize() const;
+    // length caculation
+    float length() const { return static_cast<float>(sqrt(x * x + y * y + z * z + w * w)); }
+    float squaredlength() const { return x * x + y * y + z * z + w * w; }
+    // product
+    float dot(const Vector4& rhs) const { return x * rhs.x + y * rhs.y + z * rhs.z + w * rhs.w; }
+    // linear interpolation
+    Vector4 lerp(const Vector4& v2, float weight) const { return (*this) * (1.0f - weight) + v2 * weight; }
+    Vector4 quadraticinterpolate(const Vector4& v2, const Vector4& v3, float weight) const
+    {
+        return (*this) * (1.0f - weight) * (1.0f - weight) + v2 * 2.0f * weight * (1.0f - weight) + v3 * weight * weight;
+    }
 
-    void operator=(const Vector3D& vec);
-    Vector4D operator+(const Vector4D& vec)const;
-    Vector4D operator-(const Vector4D& vec)const;
-    Vector4D operator*(const float& t)const;
-    Vector4D operator/(const Vector4D& vec)const;
-    void operator+=(const Vector4D& vec);
-    void operator-=(const Vector4D& vec);
-    void operator/=(const float& t);
-    Vector4D operator+() const;
-    Vector4D operator-() const;
+    // overloaded operators
+    Vector4 operator+(const Vector4& rhs) const { return Vector4(x + rhs.x, y + rhs.y, z + rhs.z, w + rhs.w); }
+    Vector4 operator-(const Vector4& rhs) const { return Vector4(x - rhs.x, y - rhs.y, z - rhs.z, w - rhs.w); }
+    Vector4 operator*(const float rhs) const { return Vector4(x * rhs, y * rhs, z * rhs, w * rhs); }
+    Vector4 operator/(const float rhs) const
+    {
+        return (equal(rhs, 0.0f)) ? Vector4(0.0f, 0.0f, 0.0f, 0.0f) : Vector4(x / rhs, y / rhs, z / rhs, w / rhs);
+    }
 
-    float dot(const Vector4D& vec) const;
-	Vector4D lerp(const Vector4D& vec, float weight) const;
-	Vector4D lerp(const Vector4D& vec1, const Vector4D& vec2, float weight) const;
+    bool operator==(const Vector4& rhs) const { return (equal(x, rhs.x) && equal(y, rhs.y) && equal(z, rhs.z) && equal(w, rhs.w)); }
+    bool operator!=(const Vector4& rhs) const { return !((*this) == rhs); }
+
+    void operator+=(const Vector4& rhs) { x += rhs.x; y += rhs.y; z += rhs.z; w += rhs.w; }
+    void operator-=(const Vector4& rhs) { x -= rhs.x; y -= rhs.y; z -= rhs.z; w -= rhs.w; }
+    void operator*=(const float rhs) { x *= rhs; y *= rhs; z *= rhs; w *= rhs; }
+    void operator/=(const float rhs) { if (!equal(rhs, 0.0f)) { x /= rhs; y /= rhs; z /= rhs; w /= rhs; } }
+
+    Vector4 operator-() const { return Vector4(-x, -y, -z, -w); }
+    Vector4 operator+() const { return *this; }
 };
-

@@ -1,53 +1,68 @@
 #pragma once
-
-#include "vector3.h"
 #include "vector4.h"
 
 class Matrix
 {
 public:
-    float ele[4][4];
-public:
-    Matrix() :ele{ 0.0f } {}
+    float ele[16];
 
-    Matrix(float a00, float a01, float a02, float a03,
-        float a10, float a11, float a12, float a13,
-        float a20, float a21, float a22, float a23,
-        float a30, float a31, float a32, float a33)
-        :ele{ a00,a01,a02,a03,a10,a11,a12,a13,a20,a21,a22,a23,a30,a31,a32,a33 } {
-    }
+    // constructors
+    Matrix() { normalize(); }
+    Matrix(float e0, float e1, float e2, float e3,
+        float e4, float e5, float e6, float e7,
+        float e8, float e9, float e10, float e11,
+        float e12, float e13, float e14, float e15);
+    Matrix(const float* rhs);
+    Matrix(const Matrix& rhs);
+    ~Matrix() = default;
 
-    Matrix(const Matrix& mat)
-        :ele{ mat.ele[0][0],mat.ele[0][1],mat.ele[0][2],mat.ele[0][3],
-             mat.ele[1][0],mat.ele[1][1],mat.ele[1][2],mat.ele[1][3],
-             mat.ele[2][0],mat.ele[2][1],mat.ele[2][2],mat.ele[2][3],
-             mat.ele[3][0],mat.ele[3][1],mat.ele[3][2],mat.ele[3][3] } {
-    }
-
-    ~Matrix() {}
-
-    void set(float e, int x, int y);
-
-    Matrix operator+(const Matrix& mat);
-    Matrix operator-(const Matrix& mat);
-    Matrix operator*(const float k);
-    Matrix operator*(const Matrix& mat);
-    Vector4D operator*(const Vector4D vec);
-    Matrix operator/(const float k);
-    void operator+=(const Matrix& mat);
-    void operator-=(const Matrix& mat);
-    void operator*=(const float k);
-    void operator*=(const Matrix& mat);
-    void operator/=(const float k);
-    Matrix operator+() const;
-    Matrix operator-() const;
-
+    // setter,getter
+    void setelement(int position, float value);
+    float getelement(int position) const;
+    Vector4 row(int position) const;
+    Vector4 col(int position) const;
     void normalize();
-    void transposition();
-    void translation(const Vector3D& trans);
-    void scale(const Vector3D& sca);
+    void zero();
+
+    // overloaded operators
+    Matrix operator+(const Matrix& rhs) const;
+    Matrix operator-(const Matrix& rhs) const;
+    Matrix operator*(const Matrix& rhs) const;
+    Matrix operator*(const float rhs) const;
+    Matrix operator/(const float rhs) const;
+    bool operator==(const Matrix& rhs) const;
+    bool operator!=(const Matrix& rhs) const;
+    void operator+=(const Matrix& rhs);
+    void operator-=(const Matrix& rhs);
+    void operator*=(const Matrix& rhs);
+    void operator*=(const float rhs);
+    void operator/=(const float rhs);
+    Matrix operator-() const;
+    Matrix operator+() const { return (*this); }
+    Vector4 operator*(const Vector4 rhs) const;
+
+
+    // inverse, transpose
+    float determinant() const;
+	float getDeterminant() const { return determinant(); }
+    void inverted();
+    Matrix getInverse() const;
+    void transpose();
+    Matrix getTranspose() const;
+    void invertTranspose();
+    Matrix getInverseTranspose() const;
+
+    // operation on space
+    void translation(const Vector3& translation);
+    void scale(const Vector3& scale);
+    void rotationAxis(const double angle, const Vector3& axis);
     void rotationX(const double angle);
     void rotationY(const double angle);
     void rotationZ(const double angle);
+    void rotationEuler(const double angleX, const double angleY, const double angleZ);
+    void perspective(float fovy, float aspect, float near, float far);
+    void perspective(float left, float right, float bottom, float top, float near, float far);
+    void ortho(float left, float right, float bottom, float top, float near, float far);
+    void lookat(Vector3 cameraPos, Vector3 target, Vector3 worldUp);
+	void viewPort(int left, int top, int width, int height);
 };
-

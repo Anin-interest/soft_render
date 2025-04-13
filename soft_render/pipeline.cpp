@@ -18,6 +18,7 @@ void Pipeline::initialize()
     if (m_frontBuffer != nullptr)delete m_frontBuffer;
     if (m_backBuffer)delete m_backBuffer;
     if (m_shader)delete m_shader;
+    viewPortMatrix.viewPort(0, 0, width, height);
     m_frontBuffer = new FrameBuffer(width, height);
     m_backBuffer = new FrameBuffer(width, height);
     m_shader = new BasicShader();
@@ -26,21 +27,65 @@ void Pipeline::initialize()
 void Pipeline::drawIndex(RenderMode mode)
 {
     if (m_indices.empty())return;
-    for (unsigned int i = 0; i<m_indices.size() ;){
-		Vertex vv1 = m_vertices[m_indices[i++]],vv2 = m_vertices[m_indices[i++]],vv3 = m_vertices[m_indices[i++]]; // 取出第三个顶点
+    for (unsigned int i = 0; i < m_indices.size();) {
+        Vertex vv1 = m_vertices[m_indices[i++]], vv2 = m_vertices[m_indices[i++]], vv3 = m_vertices[m_indices[i++]]; // 取出第三个顶点
         V2F v1 = m_shader->vertexShader(vv1), v2 = m_shader->vertexShader(vv2), v3 = m_shader->vertexShader(vv3);
+        //v1.posV2P /= v1.posV2P.w;
+        //v2.posV2P /= v2.posV2P.w;
+        //v3.posV2P /= v3.posV2P.w;
+        v1.posV2P = viewPortMatrix * v1.posV2P;
+        v2.posV2P = viewPortMatrix * v2.posV2P;
+        v3.posV2P = viewPortMatrix * v3.posV2P;
         m_backBuffer->Cover(static_cast<int>(v1.posV2P.x), static_cast<int>(v1.posV2P.y), v1.color);
         m_backBuffer->Cover(static_cast<int>(v2.posV2P.x), static_cast<int>(v2.posV2P.y), v2.color);
         m_backBuffer->Cover(static_cast<int>(v3.posV2P.x), static_cast<int>(v3.posV2P.y), v3.color);
         /*这部分是光栅化*/
-		edgeWalkingFillRasterization(v1, v2, v3);
+        if (mode == Wire)
+        {
+            bresenham(v1, v2);
+            bresenham(v1, v3);
+            bresenham(v2, v3);
+        }
+        else if (mode == Fill)
+        {
+            edgeWalkingFillRasterization(v1, v2, v3);
+        }
     }
 }
 
-void Pipeline::clearBuffer(const Vector4D& color, bool depth)
+void Pipeline::drawIndex(RenderMode mode, maincamera* camera)
 {
-    (void)depth;
-    m_backBuffer->Fill(color);
+    if (m_indices.empty())return;
+    m_shader->setCam(camera->pos, camera->goal, camera->up, camera->fov, camera->asp, camera->near, camera->far);
+    for (unsigned int i = 0; i < m_indices.size();) {
+        Vertex vv1 = m_vertices[m_indices[i++]], vv2 = m_vertices[m_indices[i++]], vv3 = m_vertices[m_indices[i++]]; // 取出第三个顶点
+        V2F v1 = m_shader->vertexShader(vv1), v2 = m_shader->vertexShader(vv2), v3 = m_shader->vertexShader(vv3);
+		// back face culling
+		if (!backFaceCulling(mode, camera->pos, v1.posM2W, v2.posM2W, v3.posM2W)) continue;
+		// cliping
+		if (lineCliping(v1, v2) || lineCliping(v1, v3) || lineCliping(v2, v3)) continue;
+		// perspective
+		perspective(v1);
+		perspective(v2);
+		perspective(v3);
+        // viewport transfer
+        v1.posV2P = viewPortMatrix * v1.posV2P;
+        v2.posV2P = viewPortMatrix * v2.posV2P;
+        v3.posV2P = viewPortMatrix * v3.posV2P;
+
+        if (mode == Wire)
+        {
+            bresenham(v1, v2);
+            bresenham(v1, v3);
+            bresenham(v2, v3);
+        }
+        else if (mode == Fill)
+        {
+            edgeWalkingFillRasterization(v1, v2, v3);
+            //edgeWalkingFillRasterization(v1, v2, v3, 1);
+            //edgeWalkingFillRasterization(v1,v2,v3,2);
+        }
+    }
 }
 
 void Pipeline::setShaderMode(ShadingMode mode)
@@ -48,6 +93,12 @@ void Pipeline::setShaderMode(ShadingMode mode)
     if (m_shader)delete m_shader;
     if (mode == Simple)
         m_shader = new BasicShader();
+}
+
+void Pipeline::clearBuffer(const Vector4& color, bool depth)
+{
+    (void)depth;
+    m_backBuffer->Fill(color);
 }
 
 void Pipeline::swapBuffer()
@@ -60,23 +111,97 @@ void Pipeline::swapBuffer()
 V2F Pipeline::lerp(const V2F& n1, const V2F& n2, float weight)
 {
     V2F result;
-	result.x = n1.x + weight * (n2.x - n1.x);
-	result.y = n1.y + weight * (n2.y - n1.y);
     result.posV2P = n1.posV2P.lerp(n2.posV2P, weight);
     result.posM2W = n1.posM2W.lerp(n2.posM2W, weight);
     result.color = n1.color.lerp(n2.color, weight);
     result.normal = n1.normal.lerp(n2.normal, weight);
     result.texcoord = n1.texcoord.lerp(n2.texcoord, weight);
-    //result.oneDivZ=(1.0-weight)*n1.oneDivZ+weight*n2.oneDivZ;
-    //result.textureID = n1.textureID;
+    result.oneDivZ=(1.0-weight)*n1.oneDivZ+weight*n2.oneDivZ;
+    result.textureID = n1.textureID;
     return result;
 }
 
+void Pipeline::perspective(V2F& target)
+{
+	target.posV2P /= target.posV2P.w;
+    // map from [-1,1] to [0,1]
+    target.posV2P.z = (target.posV2P.z + 1.0f) * 0.5f;
+}
+
+bool Pipeline::lineCliping(const V2F& from, const V2F& to)
+{
+    // return whether the line is totally outside or not.
+    float vMin = -from.posV2P.w, vMax = from.posV2P.w;
+    float x1 = from.posV2P.x, y1 = from.posV2P.y;
+    float x2 = to.posV2P.x, y2 = to.posV2P.y;
+
+    int tmp = 0;
+    int outcode1 = 0, outcode2 = 0;
+
+    // outcode1 calculation.
+    tmp = (y1 > vMax) ? 1 : 0;
+    tmp <<= 3;
+    outcode1 |= tmp;
+    tmp = (y1 < vMin) ? 1 : 0;
+    tmp <<= 2;
+    outcode1 |= tmp;
+    tmp = (x1 > vMax) ? 1 : 0;
+    tmp <<= 1;
+    outcode1 |= tmp;
+    tmp = (x1 < vMin) ? 1 : 0;
+    outcode1 |= tmp;
+
+    // outcode2 calculation.
+    tmp = (y2 > vMax) ? 1 : 0;
+    tmp <<= 3;
+    outcode2 |= tmp;
+    tmp = (y2 < vMin) ? 1 : 0;
+    tmp <<= 2;
+    outcode2 |= tmp;
+    tmp = (x2 > vMax) ? 1 : 0;
+    tmp <<= 1;
+    outcode2 |= tmp;
+    tmp = (x2 < vMin) ? 1 : 0;
+    outcode2 |= tmp;
+
+    if ((outcode1 & outcode2) != 0)
+        return true;
+
+    // bounding box judge.
+    Vector2 minPoint, maxPoint;
+    minPoint.x = min(from.posV2P.x, to.posV2P.x);
+    minPoint.y = min(from.posV2P.y, to.posV2P.y);
+    maxPoint.x = max(from.posV2P.x, to.posV2P.x);
+    maxPoint.y = max(from.posV2P.y, to.posV2P.y);
+    if (minPoint.x > vMax || maxPoint.x < vMin || minPoint.y > vMax || maxPoint.y < vMin)
+        return true;
+
+    return false;
+}
+
+bool Pipeline::backFaceCulling(RenderMode mode, Vector3 pos, const Vector4& v1, const Vector4& v2, const Vector4& v3)
+{
+    // back face culling.
+    if (mode == RenderMode::Wire)
+        return true;
+    Vector4 tmp1 = v2 - v1;
+    Vector4 tmp2 = v3 - v1;
+    Vector3 edge1(tmp1.x, tmp1.y, tmp1.z);
+    Vector3 edge2(tmp2.x, tmp2.y, tmp2.z);
+    Vector3 viewRay(pos.x - v1.x,
+        pos.y - v1.y,
+        pos.z - v1.z);
+    Vector3 normal = edge1.cross(edge2);
+    return normal.dot(viewRay) > 0;
+}
+
+// 光栅化算法
 void Pipeline::bresenham(const V2F& from, const V2F& to)
 {
-    int dx = to.x - from.x, dy = to.y - from.y;
+    int dx = to.posV2P.x - from.posV2P.x;
+    int dy = to.posV2P.y - from.posV2P.y;
     int sx = 1, sy = 1;
-    int nowX = from.x, nowY = from.y;
+    int nowX = from.posV2P.x, nowY = from.posV2P.y;
     if (dx < 0) {
         sx = -1;
         dx = -dx;
@@ -85,13 +210,14 @@ void Pipeline::bresenham(const V2F& from, const V2F& to)
         sy = -1;
         dy = -dy;
     }
+
     V2F tmp;
     if (dy <= dx)
     {
         int d = 2 * dy - dx;
         for (int i = 0; i <= dx; ++i)
         {
-            tmp = lerp(from, to, static_cast<double>(i) / dx);
+            tmp = lerp(from, to, static_cast<float>(i) / dx);
             m_backBuffer->Cover(nowX, nowY, m_shader->fragmentShader(tmp));
             nowX += sx;
             if (d <= 0)d += 2 * dy;
@@ -106,7 +232,7 @@ void Pipeline::bresenham(const V2F& from, const V2F& to)
         int d = 2 * dx - dy;
         for (int i = 0; i <= dy; ++i)
         {
-            tmp = lerp(from, to, static_cast<double>(i) / dy);
+            tmp = lerp(from, to, static_cast<float>(i) / dy);
             m_backBuffer->Cover(nowX, nowY, m_shader->fragmentShader(tmp));
             nowY += sy;
             if (d < 0)d += 2 * dx;
@@ -125,15 +251,24 @@ void Pipeline::scanLinePerRow(const V2F& left, const V2F& right)
     for (int i = 0; i <= length; ++i)
     {
         // linear interpolation
-        double weight = static_cast<double>(i) / length;
+        float weight = static_cast<float>(i) / length;
         current = lerp(left, right, weight);
         current.posV2P.x = left.posV2P.x + i;
         current.posV2P.y = left.posV2P.y;
+		// depth test
+		float depth = m_backBuffer->getDepthBuffer(current.posV2P.x,current.posV2P.y);
+        if (depth < current.posV2P.z) continue;
+		m_backBuffer->setDepthBuffer(current.posV2P.x, current.posV2P.y, current.posV2P.z);
+
+        float w = 1.0 / current.oneDivZ;
+        current.posV2P *= w;
+        current.color *= w;
+        current.texcoord *= w;
         // fragment shader
-        m_backBuffer->Cover(current.posV2P.x, current.posV2P.y,
-            m_shader->fragmentShader(current));
+		m_backBuffer->Cover(current.posV2P.x, current.posV2P.y, m_shader->fragmentShader(current));
     }
 }
+
 void Pipeline::rasterTopTriangle(V2F& v1, V2F& v2, V2F& v3)
 {
     V2F left = v2;
@@ -150,9 +285,9 @@ void Pipeline::rasterTopTriangle(V2F& v1, V2F& v2, V2F& v3)
 
     for (int i = 0; i < dy; ++i)
     {
-        double weight = 0;
+        float weight = 0;
         if (dy != 0)
-            weight = static_cast<double>(i) / dy;
+            weight = static_cast<float>(i) / dy;
         newleft = lerp(left, dest, weight);
         newright = lerp(right, dest, weight);
         newleft.posV2P.y = newright.posV2P.y = left.posV2P.y - i;
@@ -175,9 +310,9 @@ void Pipeline::rasterBottomTriangle(V2F& v1, V2F& v2, V2F& v3)
     int dy = dest.posV2P.y - left.posV2P.y + 1;
     for (int i = 0; i < dy; ++i)
     {
-        double weight = 0;
+        float weight = 0;
         if (dy != 0)
-            weight = static_cast<double>(i) / dy;
+            weight = static_cast<float>(i) / dy;
         newleft = lerp(left, dest, weight);
         newright = lerp(right, dest, weight);
         newleft.posV2P.y = newright.posV2P.y = left.posV2P.y + i;
@@ -188,7 +323,7 @@ void Pipeline::rasterBottomTriangle(V2F& v1, V2F& v2, V2F& v3)
 void Pipeline::edgeWalkingFillRasterization(const V2F& v1, const V2F& v2, const V2F& v3)
 {
     V2F tmp;
-    V2F target[3] = { v1, v2,v3 };
+    V2F target[3] = {v1, v2, v3};
     if (target[0].posV2P.y > target[1].posV2P.y)
     {
         tmp = target[0];
@@ -215,7 +350,7 @@ void Pipeline::edgeWalkingFillRasterization(const V2F& v1, const V2F& v2, const 
     }
     else
     {
-        double weight = static_cast<double>(target[1].posV2P.y - target[0].posV2P.y) / (target[2].posV2P.y - target[0].posV2P.y);
+        float weight = static_cast<float>(target[1].posV2P.y - target[0].posV2P.y) / (target[2].posV2P.y - target[0].posV2P.y);
         V2F newPoint = lerp(target[0], target[2], weight);
         newPoint.posV2P.y = target[1].posV2P.y;
         rasterTopTriangle(target[0], newPoint, target[1]);

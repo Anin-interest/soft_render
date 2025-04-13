@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Translation Files">
-      <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
-      <Extensions>ts</Extensions>
-    </Filter>
     <Filter Include="form">
       <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
       <Extensions>ui</Extensions>
@@ -21,6 +17,21 @@
     </Filter>
     <Filter Include="render">
       <UniqueIdentifier>{a5bb5207-49ec-4948-adba-a8314d0bbf98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render\shader">
+      <UniqueIdentifier>{c92d9e07-ea85-4a44-86ff-4fdb0f49f71c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render\control">
+      <UniqueIdentifier>{41c67f9e-8830-4fc6-8457-ebf021dc2bcc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render\tools">
+      <UniqueIdentifier>{194178d6-598d-4b1e-be29-b633897360b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render\texture">
+      <UniqueIdentifier>{0d9eccff-e428-4af5-8f7b-2f744f7f3627}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resource\images">
+      <UniqueIdentifier>{5892a137-4927-4b54-a1ad-a5d5fb2079f8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -39,29 +50,38 @@
     <ClCompile Include="matrix.cpp">
       <Filter>basic</Filter>
     </ClCompile>
-    <ClCompile Include="vector2.cpp">
-      <Filter>basic</Filter>
-    </ClCompile>
     <ClCompile Include="vector3.cpp">
       <Filter>basic</Filter>
     </ClCompile>
     <ClCompile Include="vector4.cpp">
       <Filter>basic</Filter>
     </ClCompile>
-    <ClCompile Include="pipeline.cpp">
-      <Filter>render</Filter>
+    <ClCompile Include="basicshader.cpp">
+      <Filter>render\shader</Filter>
     </ClCompile>
-    <ClCompile Include="polygon.cpp">
-      <Filter>render</Filter>
+    <ClCompile Include="pipeline.cpp">
+      <Filter>render\control</Filter>
     </ClCompile>
     <ClCompile Include="renderroute.cpp">
-      <Filter>render</Filter>
+      <Filter>render\control</Filter>
     </ClCompile>
     <ClCompile Include="framebuffer.cpp">
-      <Filter>render</Filter>
+      <Filter>render\tools</Filter>
     </ClCompile>
-    <ClCompile Include="basicshader.cpp">
-      <Filter>render</Filter>
+    <ClCompile Include="polygon.cpp">
+      <Filter>render\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="maincamera.cpp">
+      <Filter>render\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="texture.cpp">
+      <Filter>render\texture</Filter>
+    </ClCompile>
+    <ClCompile Include="vector2.cpp">
+      <Filter>basic</Filter>
+    </ClCompile>
+    <ClCompile Include="utils.cpp">
+      <Filter>basic</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -69,7 +89,7 @@
       <Filter>framework</Filter>
     </QtMoc>
     <QtMoc Include="renderroute.h">
-      <Filter>render</Filter>
+      <Filter>render\control</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -85,20 +105,32 @@
     <ClInclude Include="vector4.h">
       <Filter>basic</Filter>
     </ClInclude>
+    <ClInclude Include="basicshader.h">
+      <Filter>render\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="baseshader.h">
+      <Filter>render\shader</Filter>
+    </ClInclude>
     <ClInclude Include="pipeline.h">
-      <Filter>render</Filter>
-    </ClInclude>
-    <ClInclude Include="polygon.h">
-      <Filter>render</Filter>
-    </ClInclude>
-    <ClInclude Include="shader.h">
-      <Filter>render</Filter>
+      <Filter>render\control</Filter>
     </ClInclude>
     <ClInclude Include="framebuffer.h">
-      <Filter>render</Filter>
+      <Filter>render\tools</Filter>
     </ClInclude>
-    <ClInclude Include="basicshader.h">
-      <Filter>render</Filter>
+    <ClInclude Include="polygon.h">
+      <Filter>render\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="maincamera.h">
+      <Filter>render\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="texture.h">
+      <Filter>render\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="include.h">
+      <Filter>basic</Filter>
+    </ClInclude>
+    <ClInclude Include="utils.h">
+      <Filter>basic</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

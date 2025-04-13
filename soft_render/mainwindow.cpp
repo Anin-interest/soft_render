@@ -7,14 +7,20 @@ MainWindow::MainWindow(QWidget* parent)
 	ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    this->resize(1280, 768);
+    this->resize(800, 600);
+
+	timer = new QTimer();
+    connect(timer, &QTimer::timeout, this, &MainWindow::fpsTimeOut);
+
+
     loop = new RenderRoute(width(), height(), nullptr);
     loopThread = new QThread(this);
     loop->moveToThread(loopThread);
     connect(loopThread, &QThread::finished, loop, &RenderRoute::deleteLater);
-    connect(loopThread, &QThread::started, loop, &RenderRoute::loop);
+    connect(loopThread, &QThread::started, loop, &RenderRoute::loop_3d);
     connect(loop, &RenderRoute::frameOut, this, &MainWindow::receiveFrame);
     loopThread->start();
+    timer->start(1000);
 }
 
 MainWindow::~MainWindow()
@@ -29,6 +35,7 @@ MainWindow::~MainWindow()
     canvas = nullptr;
     loopThread = nullptr;
 }
+
 void MainWindow::paintEvent(QPaintEvent* event)
 {
     if (canvas)
@@ -38,9 +45,17 @@ void MainWindow::paintEvent(QPaintEvent* event)
     }
     QWidget::paintEvent(event);
 }
+
 void MainWindow::receiveFrame(unsigned char* data)
 {
     if (canvas) delete canvas;
     canvas = new QImage(data, width(), height(), QImage::Format_RGBA8888);
     update();
+}
+
+void MainWindow::fpsTimeOut()
+{
+    int fps = loop->getFps();
+    loop->setFpsZero();
+    this->setWindowTitle(QString(" fps: %1").arg(fps));
 }
