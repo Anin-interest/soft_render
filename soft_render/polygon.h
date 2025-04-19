@@ -24,9 +24,9 @@ public:
 class V2F
 {
 public:
-	int textureID;
-	Vector4 posM2W; // Model to World
-	Vector4 posV2P; // View to Projection
+    int textureID;
+    Vector4 posM2W;
+    Vector4 posV2P;
     Vector2 texcoord;
     Vector3 normal;
     Vector4 color;
@@ -35,10 +35,10 @@ public:
     V2F() = default;
     V2F(Vector4 pMW, Vector4 pVP, Vector2 tex, Vector3 nor, Vector4 col, float oZ) :
         posM2W(pMW), posV2P(pVP), texcoord(tex), normal(nor), color(col), oneDivZ(oZ) {
-		textureID = -1;
+        textureID = -1;
     }
     V2F(const V2F& ver) :
-		textureID(ver.textureID),
+        textureID(ver.textureID),
         posM2W(ver.posM2W),
         posV2P(ver.posV2P),
         texcoord(ver.texcoord),
@@ -47,6 +47,7 @@ public:
         oneDivZ(ver.oneDivZ) {
     }
 };
+V2F lerp(const V2F& n1, const V2F& n2, float weight);
 
 class Mesh
 {
@@ -64,6 +65,8 @@ public:
 
     void triangle(Vector3& v1, Vector3& v2, Vector3& v3);
     void pyramid();
-    void asBox(float width, float height, float depth);
-    //void plane(float width, float height, int id, Vector4 pos);
+    void box(float width, float height, float depth, Vector3 pos = Vector3());
+    void graybox(float width, float height, float depth, Vector3 pos = Vector3());
+    void face(float width, float height, float depth, Vector3 pos = Vector3());
 };
+

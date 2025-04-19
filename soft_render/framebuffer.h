@@ -14,7 +14,7 @@ public:
         depth.resize(w * h, 1.f);
     }
     ~FrameBuffer() {}
-    void Fill(Vector4 vec);
+    void Fill(Vector4 vec, float dep);
     void Cover(int x, int y, Vector4 vec);
     unsigned char* getColorBuffer() {
 		return col.data();

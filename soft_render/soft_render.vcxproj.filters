@@ -30,8 +30,14 @@
     <Filter Include="render\texture">
       <UniqueIdentifier>{0d9eccff-e428-4af5-8f7b-2f744f7f3627}</UniqueIdentifier>
     </Filter>
-    <Filter Include="resource\images">
-      <UniqueIdentifier>{5892a137-4927-4b54-a1ad-a5d5fb2079f8}</UniqueIdentifier>
+    <Filter Include="render\camera">
+      <UniqueIdentifier>{b6e4b98e-0e6a-4778-bbe8-c4206e736be2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render\light">
+      <UniqueIdentifier>{75d0a6f6-fca2-4ac2-9882-1b2bce6bd877}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render\modelload">
+      <UniqueIdentifier>{0d273c2e-752d-489e-a78d-9aaadfe87b6d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -65,13 +71,7 @@
     <ClCompile Include="renderroute.cpp">
       <Filter>render\control</Filter>
     </ClCompile>
-    <ClCompile Include="framebuffer.cpp">
-      <Filter>render\tools</Filter>
-    </ClCompile>
     <ClCompile Include="polygon.cpp">
-      <Filter>render\tools</Filter>
-    </ClCompile>
-    <ClCompile Include="maincamera.cpp">
       <Filter>render\tools</Filter>
     </ClCompile>
     <ClCompile Include="texture.cpp">
@@ -82,6 +82,27 @@
     </ClCompile>
     <ClCompile Include="utils.cpp">
       <Filter>basic</Filter>
+    </ClCompile>
+    <ClCompile Include="maincamera.cpp">
+      <Filter>render\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="pointlight.cpp">
+      <Filter>render\light</Filter>
+    </ClCompile>
+    <ClCompile Include="lightshader.cpp">
+      <Filter>render\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="directlight.cpp">
+      <Filter>render\light</Filter>
+    </ClCompile>
+    <ClCompile Include="spotlight.cpp">
+      <Filter>render\light</Filter>
+    </ClCompile>
+    <ClCompile Include="framebuffer.cpp">
+      <Filter>framework</Filter>
+    </ClCompile>
+    <ClCompile Include="objmodel.cpp">
+      <Filter>render\modelload</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -114,13 +135,7 @@
     <ClInclude Include="pipeline.h">
       <Filter>render\control</Filter>
     </ClInclude>
-    <ClInclude Include="framebuffer.h">
-      <Filter>render\tools</Filter>
-    </ClInclude>
     <ClInclude Include="polygon.h">
-      <Filter>render\tools</Filter>
-    </ClInclude>
-    <ClInclude Include="maincamera.h">
       <Filter>render\tools</Filter>
     </ClInclude>
     <ClInclude Include="texture.h">
@@ -131,6 +146,30 @@
     </ClInclude>
     <ClInclude Include="utils.h">
       <Filter>basic</Filter>
+    </ClInclude>
+    <ClInclude Include="maincamera.h">
+      <Filter>render\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="pointlight.h">
+      <Filter>render\light</Filter>
+    </ClInclude>
+    <ClInclude Include="light.h">
+      <Filter>render\light</Filter>
+    </ClInclude>
+    <ClInclude Include="lightshader.h">
+      <Filter>render\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="directlight.h">
+      <Filter>render\light</Filter>
+    </ClInclude>
+    <ClInclude Include="spotlight.h">
+      <Filter>render\light</Filter>
+    </ClInclude>
+    <ClInclude Include="framebuffer.h">
+      <Filter>framework</Filter>
+    </ClInclude>
+    <ClInclude Include="objmodel.h">
+      <Filter>render\modelload</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

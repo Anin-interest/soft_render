@@ -19,7 +19,7 @@ public:
     ~MainWindow();
 
 private:
-    void paintEvent(QPaintEvent*) override;
+    void paintEvent(QPaintEvent*) ;
     void receiveFrame(unsigned char* data);
     void fpsTimeOut();
 

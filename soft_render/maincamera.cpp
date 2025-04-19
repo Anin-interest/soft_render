@@ -1,17 +1,16 @@
 #include "maincamera.h"
 #include "vector4.h"
 #include "matrix.h"
-#include "stdio.h"
 
 maincamera::maincamera()
 {
-    pos = Vector3(0, 8, 0);
+    pos = Vector3(0.0f, 1.0f, 3.0f);
     goal = Vector3(0, 0, 0);
-    up = Vector3(0, 0, -1);
-    fov = 60;
+    up = Vector3(0, 1, 0);
+    fov = 45;
     asp = 8.f / 6;
-    near = 1.f;
-    far = 50.f;
+    near = 0.1f;
+    far = 5.f;
 }
 maincamera::maincamera(Vector3 mpos, Vector3 mgoal, Vector3 mup, float mfov, float masp, float mnear, float mfar)
 {

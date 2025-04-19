@@ -12,12 +12,11 @@ MainWindow::MainWindow(QWidget* parent)
 	timer = new QTimer();
     connect(timer, &QTimer::timeout, this, &MainWindow::fpsTimeOut);
 
-
     loop = new RenderRoute(width(), height(), nullptr);
     loopThread = new QThread(this);
     loop->moveToThread(loopThread);
     connect(loopThread, &QThread::finished, loop, &RenderRoute::deleteLater);
-    connect(loopThread, &QThread::started, loop, &RenderRoute::loop_3d);
+    connect(loopThread, &QThread::started, loop, &RenderRoute::loop_model);
     connect(loop, &RenderRoute::frameOut, this, &MainWindow::receiveFrame);
     loopThread->start();
     timer->start(1000);

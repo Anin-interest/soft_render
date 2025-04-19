@@ -1,5 +1,11 @@
 #include "vector4.h"
 
+Vector3::Vector3(const Vector4& rhs) {
+	x = rhs.x;
+	y = rhs.y;
+	z = rhs.z;
+}
+
 void Vector4::normalize()
 {
 	float tmp = this->length();

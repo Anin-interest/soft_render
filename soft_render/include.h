@@ -37,6 +37,8 @@ using std::function;
 using std::shared_ptr;
 using std::wstringstream;
 using std::unordered_set;
+using std::ifstream;
+using std::istringstream;
 
 using std::max;
 using std::min;

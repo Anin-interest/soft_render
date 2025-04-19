@@ -10,14 +10,17 @@ private:
     Matrix Mw2v;
     Matrix Mv2p;
 	std::vector<Textures*> textures;
-    int texcount;
+    int textureID;
     
 public:
     BasicShader();
     ~BasicShader();
-    void setCam(Vector3 pos, Vector3 goal, Vector3 up, float fov, float asp, float near, float far);
-    V2F vertexShader(const Vertex& in);
-    Vector4 fragmentShader(const V2F& in);
-    int genTexture(QString& path);
-    Vector4 getTexture(int id, const V2F& in);
+    virtual void setCam(maincamera* camera) ;
+    virtual V2F vertexShader(const Vertex& in) ;
+    virtual Vector4 fragmentShader(const V2F& in) ;
+    virtual int genTexture(QString& path) ;
+    virtual Vector4 getTexture(int id, const V2F& in) ;
+    virtual void setTextureID(int id)  { textureID = id; }
+    virtual void setMaterial(Material* m){}
+    virtual void setLight(Light* l){}
 };

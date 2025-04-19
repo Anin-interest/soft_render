@@ -18,6 +18,9 @@ signals:
 public slots:
     void loop();
     void loop_3d();
+    void loop_scene();
+    void loop_model();
+    void loop_light();
 
 private:
     bool stopped;

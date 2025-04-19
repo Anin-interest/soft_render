@@ -6,7 +6,6 @@ class Matrix
 public:
     float ele[16];
 
-    // constructors
     Matrix() { normalize(); }
     Matrix(float e0, float e1, float e2, float e3,
         float e4, float e5, float e6, float e7,
@@ -16,7 +15,6 @@ public:
     Matrix(const Matrix& rhs);
     ~Matrix() = default;
 
-    // setter,getter
     void setelement(int position, float value);
     float getelement(int position) const;
     Vector4 row(int position) const;
@@ -24,7 +22,6 @@ public:
     void normalize();
     void zero();
 
-    // overloaded operators
     Matrix operator+(const Matrix& rhs) const;
     Matrix operator-(const Matrix& rhs) const;
     Matrix operator*(const Matrix& rhs) const;
@@ -41,10 +38,7 @@ public:
     Matrix operator+() const { return (*this); }
     Vector4 operator*(const Vector4 rhs) const;
 
-
-    // inverse, transpose
     float determinant() const;
-	float getDeterminant() const { return determinant(); }
     void inverted();
     Matrix getInverse() const;
     void transpose();
@@ -52,7 +46,6 @@ public:
     void invertTranspose();
     Matrix getInverseTranspose() const;
 
-    // operation on space
     void translation(const Vector3& translation);
     void scale(const Vector3& scale);
     void rotationAxis(const double angle, const Vector3& axis);

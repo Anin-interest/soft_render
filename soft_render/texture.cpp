@@ -23,11 +23,15 @@ void Textures::loadImage(const QString& path)
     pixelBuffer->load(path);
     width = pixelBuffer->width();
     height = pixelBuffer->height();
-    channel = 4;
+	channel = pixelBuffer->format() == QImage::Format_RGBA8888 ? 4 : 3;
 }
 Vector4 Textures::sample(const Vector2& texcoord)
 {
     Vector4 result(0.0, 0.0, 0.0, 1.0);
+	if (pixelBuffer == nullptr)
+	{
+		return result;
+	}
     unsigned int x = 0, y = 0;
     if (texcoord.x >= 0.0f && texcoord.x <= 1.0f && texcoord.y >= 0.0f && texcoord.y <= 1.0f)
     {
@@ -56,6 +60,7 @@ Vector4 Textures::sample(const Vector2& texcoord)
     result.x = static_cast<float>(pixelBuffer->pixelColor(x, y).red()) * 1.0f / 255;
     result.y = static_cast<float>(pixelBuffer->pixelColor(x, y).green()) * 1.0f / 255;
     result.z = static_cast<float>(pixelBuffer->pixelColor(x, y).blue()) * 1.0f / 255;
+	result.w = static_cast<float>(pixelBuffer->pixelColor(x, y).alpha()) * 1.0f / 255;
 
     return result;
 }

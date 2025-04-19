@@ -211,6 +211,102 @@ Vector4 Matrix::operator*(const Vector4 rhs) const
 }
 #pragma endregion
 
+#pragma region inverse, transpose
+float Matrix::determinant() const
+{
+	return ele[0] * ele[5] * ele[10] * ele[15] + ele[4] * ele[9] * ele[14] * ele[3] +
+		ele[8] * ele[13] * ele[2] * ele[7] + ele[12] * ele[1] * ele[6] * ele[11] -
+		ele[0] * ele[13] * ele[10] * ele[7] - ele[4] * ele[1] * ele[14] * ele[11] -
+		ele[8] * ele[5] * ele[2] * ele[15] - ele[12] * ele[9] * ele[6] * ele[3];
+}
+
+void Matrix::inverted()
+{
+	float det = determinant();
+	if (det == 0) {
+		return;
+	}
+	float invDet = 1.0f / det;
+	Matrix res;
+	res.ele[0] = (ele[5] * ele[10] * ele[15] + ele[6] * ele[11] * ele[13] + ele[7] * ele[9] * ele[14]
+		- ele[5] * ele[11] * ele[14] - ele[6] * ele[9] * ele[15] - ele[7] * ele[10] * ele[13]) * invDet;
+	res.ele[4] = (ele[1] * ele[11] * ele[14] + ele[2] * ele[9] * ele[15] + ele[3] * ele[10] * ele[13]
+		- ele[1] * ele[10] * ele[15] - ele[2] * ele[11] * ele[13] - ele[3] * ele[9] * ele[14]) * invDet;
+	res.ele[8] = (ele[1] * ele[6] * ele[15] + ele[2] * ele[7] * ele[13] + ele[3] * ele[5] * ele[14]
+		- ele[1] * ele[7] * ele[14] - ele[2] * ele[5] * ele[15] - ele[3] * ele[6] * ele[13]) * invDet;
+	res.ele[12] = (ele[1] * ele[7] * ele[10] + ele[2] * ele[5] * ele[11] + ele[3] * ele[6] * ele[9]
+		- ele[1] * ele[6] * ele[11] - ele[2] * ele[7] * ele[9] - ele[3] * ele[5] * ele[10]) * invDet;
+
+	res.ele[1] = (ele[4] * ele[11] * ele[14] + ele[6] * ele[8] * ele[15] + ele[7] * ele[12] * ele[13]
+		- ele[4] * ele[12] * ele[15] - ele[6] * ele[11] * ele[13] - ele[7] * ele[8] * ele[14]) * invDet;
+	res.ele[5] = (ele[0] * ele[12] * ele[15] + ele[2] * ele[4] * ele[13] + ele[3] * ele[8] * ele[14]
+		- ele[0] * ele[8] * ele[15] - ele[2] * ele[11] * ele[13] - ele[3] * ele[4] * ele[14]) * invDet;
+	res.ele[9] = (ele[0] * ele[7] * ele[14] + ele[2] * ele[4] * ele[15] + ele[3] * ele[6] * ele[12]
+		- ele[0] * ele[6] * ele[15] - ele[2] * ele[7] * ele[12] - ele[3] * ele[4] * ele[14]) * invDet;
+	res.ele[13] = (ele[0] * ele[6] * ele[11] + ele[2] * ele[7] * ele[8] + ele[3] * ele[4] * ele[10]
+		- ele[0] * ele[7] * ele[10] - ele[2] * ele[4] * ele[11] - ele[3] * ele[6] * ele[8])* invDet;
+
+	res.ele[2] = (ele[4] * ele[9] * ele[14] + ele[5] * ele[12] * ele[13] + ele[7] * ele[8] * ele[10]
+		- ele[4] * ele[12] * ele[10] - ele[5] * ele[9] * ele[14] - ele[7] * ele[8] * ele[13]) * invDet;
+	res.ele[6] = (ele[0] * ele[12] * ele[13] + ele[1] * ele[4] * ele[14] + ele[3] * ele[8] * ele[9]
+		- ele[0] * ele[8] * ele[14] - ele[1] * ele[12] * ele[9] - ele[3] * ele[4] * ele[13]) * invDet;
+	res.ele[10] = (ele[0] * ele[5] * ele[14] + ele[1] * ele[6] * ele[8] + ele[3] * ele[4] * ele[9]
+		- ele[0] * ele[6] * ele[9] - ele[1] * ele[4] * ele[14] - ele[3] * ele[5] * ele[8]) * invDet;
+	res.ele[14] = (ele[0] * ele[6] * ele[9] + ele[1] * ele[4] * ele[10] + ele[2] * ele[5] * ele[8]
+		- ele[0] * ele[5] * ele[10] - ele[1] * ele[6] * ele[8] - ele[2] * ele[4] * ele[9]) * invDet;
+
+	res.ele[3] = (ele[4] * ele[9] * ele[13] + ele[5] * ele[12] * ele[10] + ele[6] * ele[8] * ele[11]
+		- ele[4] * ele[12] * ele[11] - ele[5] * ele[9] * ele[10] - ele[6] * ele[8] * ele[13]) * invDet;
+	res.ele[7] = (ele[0] * ele[12] * ele[11] + ele[1] * ele[4] * ele[10] + ele[2] * ele[8] * ele[13]
+		- ele[0] * ele[8] * ele[11] - ele[1] * ele[12] * ele[13] - ele[2] * ele[4] * ele[10]) * invDet;
+	res.ele[11] = (ele[0] * ele[5] * ele[10] + ele[1] * ele[6] * ele[8] + ele[2] * ele[4] * ele[9]
+		- ele[0] * ele[6] * ele[9] - ele[1] * ele[4] * ele[10] - ele[2] * ele[5] * ele[8]) * invDet;
+	res.ele[15] = (ele[0] * ele[5] * ele[10] + ele[1] * ele[6] * ele[7] + ele[2] * ele[4] * ele[8]
+		- ele[0] * ele[6] * ele[8] - ele[1] * ele[4] * ele[7] - ele[2] * ele[5] * ele[8]) * invDet;
+	for (int i = 0; i < 16; i++) {
+		ele[i] = res.ele[i];
+	}
+}
+
+Matrix Matrix::getInverse() const
+{
+	Matrix res = *this;
+	res.inverted();
+	return res;
+}
+
+void Matrix::transpose()
+{
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = i+1; j < 4; j++)
+		{
+			swap(ele[i + j * 4], ele[j + i * 4]);
+		}
+	}
+}
+
+Matrix Matrix::getTranspose() const
+{
+	Matrix res = *this;
+	res.transpose();
+	return res;
+}
+
+void Matrix::invertTranspose()
+{
+	transpose();
+	inverted();
+}
+
+Matrix Matrix::getInverseTranspose() const
+{
+	Matrix res = *this;
+	res.invertTranspose();
+	return res;
+}
+#pragma endregion
+
 #pragma region basic options
 void Matrix::translation(const Vector3& translation)
 {
@@ -290,6 +386,7 @@ void Matrix::rotationEuler(const double angleX, const double angleY, const doubl
 }
 #pragma endregion
 
+#pragma region projection
 void Matrix::perspective(float fovy, float aspect, float near, float far)
 {
 	zero();
@@ -354,4 +451,4 @@ void Matrix::viewPort(int left, int top, int width, int height)
 	ele[12] = static_cast<float>(left) + static_cast<float>(width) / 2.0f;
 	ele[13] = static_cast<float>(top) + static_cast<float>(height) / 2.0f;
 }
-
+#pragma endregion

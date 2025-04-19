@@ -93,12 +93,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="basicshader.cpp" />
+    <ClCompile Include="directlight.cpp" />
     <ClCompile Include="framebuffer.cpp" />
+    <ClCompile Include="lightshader.cpp" />
     <ClCompile Include="maincamera.cpp" />
     <ClCompile Include="matrix.cpp" />
+    <ClCompile Include="objmodel.cpp" />
     <ClCompile Include="pipeline.cpp" />
+    <ClCompile Include="pointlight.cpp" />
     <ClCompile Include="polygon.cpp" />
     <ClCompile Include="renderroute.cpp" />
+    <ClCompile Include="spotlight.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="vector2.cpp" />
@@ -112,14 +117,20 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="basicshader.h" />
+    <ClInclude Include="directlight.h" />
     <ClInclude Include="framebuffer.h" />
     <ClInclude Include="include.h" />
+    <ClInclude Include="light.h" />
+    <ClInclude Include="lightshader.h" />
     <ClInclude Include="maincamera.h" />
     <ClInclude Include="matrix.h" />
+    <ClInclude Include="objmodel.h" />
     <ClInclude Include="pipeline.h" />
+    <ClInclude Include="pointlight.h" />
     <ClInclude Include="polygon.h" />
     <ClInclude Include="baseshader.h" />
     <QtMoc Include="renderroute.h" />
+    <ClInclude Include="spotlight.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="vector2.h" />

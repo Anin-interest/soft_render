@@ -2,7 +2,7 @@
 
 BasicShader::BasicShader()
 {
-	texcount = 0;
+	textureID = -1;
     Mm2w.normalize();
     Mw2v.normalize();
     Mv2p.normalize();
@@ -16,10 +16,10 @@ BasicShader::~BasicShader()
 	textures.clear();
 }
 
-void BasicShader::setCam(Vector3 pos, Vector3 goal, Vector3 up, float fov, float asp, float near, float far)
+void BasicShader::setCam(maincamera* cam)
 {
-    Mw2v.lookat(pos, goal, up);
-    Mv2p.perspective(fov, asp, near, far);
+    Mw2v.lookat(cam->pos, cam->goal, cam->up);
+    Mv2p.perspective(cam->fov, cam->asp, cam->near, cam->far);
 }
 
 int BasicShader::genTexture(QString& path) {
@@ -31,8 +31,7 @@ int BasicShader::genTexture(QString& path) {
 
 Vector4 BasicShader::getTexture(int id, const V2F& in) {
 	if (id < 0 || id >= textures.size()) {
-		//return Vector4(1.0, 1.0, 1.0, 0.0);
-		return Vector4(0.0, 0.0, 0.0, 1.0);
+        return in.color;
 	}
 	return textures[id]->sample(in.texcoord);
 }
@@ -42,10 +41,11 @@ V2F BasicShader::vertexShader(const Vertex& in) {
     ret.posM2W = Mm2w * in.position;
     ret.posV2P = Mv2p * Mw2v * ret.posM2W;
     ret.color = in.color;
-    ret.normal = in.normal;
     ret.texcoord = in.texcoord;
-    ret.oneDivZ = 1.0;
-    ret.textureID = 0;
+
+	ret.oneDivZ = 1.f / ret.posV2P.w;
+	ret.texcoord = ret.texcoord * ret.oneDivZ;
+    ret.textureID = textureID;
     return ret;
 }
 
