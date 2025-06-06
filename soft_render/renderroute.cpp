@@ -39,7 +39,6 @@ void RenderRoute::loop_3d()
     maincamera* camera = new maincamera();
     Mesh* msh = new Mesh();
     msh->box(0.5f, 0.5f, 0.5f);
-	//msh->pyramid();
     pipeline->setVertexBuffer(msh->vertices);
     pipeline->setIndicesBuffer(msh->indices);
     while (!stopped)

@@ -13,6 +13,7 @@ class Pipeline
 {
 private:
     int width, height;
+	int vertx_cnt, face_cnt;
     BaseShader* m_shader;
     FrameBuffer* m_frontBuffer;
     FrameBuffer* m_backBuffer;
@@ -38,7 +39,7 @@ public:
     void swapBuffer();
     void perspective(V2F& target);
 
-    bool lineCliping(const V2F& from, const V2F& to);
+    void lineCliping(V2F& from, V2F& to);
     bool backFaceCulling(RenderMode mode, Vector3 pos, const Vector4& v1, const Vector4& v2, const Vector4& v3);
 
     void bresenham(const V2F& from, const V2F& to);
@@ -53,5 +54,10 @@ public:
 	void setTextureID(int id) { m_shader->setTextureID(id); }
     void setMaterial(Material* m) { m_shader->setMaterial(m); }
     void setLight(Light* l) { m_shader->setLight(l); }
+
+	int getVertexCount() { return vertx_cnt; }
+	int getFaceCount() { return face_cnt; }
+	void setVertexCountZero() { vertx_cnt = 0; }
+	void setFaceCountZero() { face_cnt = 0; }
 };
 

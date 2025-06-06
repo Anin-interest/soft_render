@@ -9,17 +9,16 @@ MainWindow::MainWindow(QWidget* parent)
     ui->setupUi(this);
     this->resize(800, 600);
 
-	timer = new QTimer();
-    connect(timer, &QTimer::timeout, this, &MainWindow::fpsTimeOut);
-
+	timer = new QTime();
     loop = new RenderRoute(width(), height(), nullptr);
     loopThread = new QThread(this);
     loop->moveToThread(loopThread);
     connect(loopThread, &QThread::finished, loop, &RenderRoute::deleteLater);
-    connect(loopThread, &QThread::started, loop, &RenderRoute::loop_model);
+    connect(loopThread, &QThread::started, loop, &RenderRoute::loop_3d);
     connect(loop, &RenderRoute::frameOut, this, &MainWindow::receiveFrame);
+    connect(loop, &RenderRoute::frameOut, this, &MainWindow::fpsTimeOut);
     loopThread->start();
-    timer->start(1000);
+	start = timer->currentTime().msecsSinceStartOfDay();
 }
 
 MainWindow::~MainWindow()
@@ -54,7 +53,15 @@ void MainWindow::receiveFrame(unsigned char* data)
 
 void MainWindow::fpsTimeOut()
 {
-    int fps = loop->getFps();
+    end = timer->currentTime().msecsSinceStartOfDay();
+	int vertexCount = loop->getVertexCount();
+	int faceCount = loop->getFaceCount();
+	loop->setVertexCountZero();
+	loop->setFaceCountZero();
+	if (end - start < 1000) return;
+    int fps = 1000.f * loop->getFps() / (end - start);
     loop->setFpsZero();
-    this->setWindowTitle(QString(" fps: %1").arg(fps));
+
+    this->setWindowTitle(QString("powered by Anin fps: %1 vertexs: %2 triangles: %3").arg(fps).arg(vertexCount).arg(faceCount));
+	start = end;
 }

@@ -31,7 +31,9 @@ void Pipeline::drawIndex(RenderMode mode)
         Vertex vv1 = m_vertices[m_indices[i++]], vv2 = m_vertices[m_indices[i++]], vv3 = m_vertices[m_indices[i++]]; // 取出第三个顶点
         V2F v1 = m_shader->vertexShader(vv1), v2 = m_shader->vertexShader(vv2), v3 = m_shader->vertexShader(vv3);
         // cliping
-        if (lineCliping(v1, v2) || lineCliping(v1, v3) || lineCliping(v2, v3)) continue;
+        lineCliping(v1, v2); 
+        lineCliping(v1, v3);
+        lineCliping(v2, v3);
         // perspective
         perspective(v1);
         perspective(v2);
@@ -40,7 +42,11 @@ void Pipeline::drawIndex(RenderMode mode)
         v1.posV2P = viewPortMatrix * v1.posV2P;
         v2.posV2P = viewPortMatrix * v2.posV2P;
         v3.posV2P = viewPortMatrix * v3.posV2P;
-        /*这部分是光栅化*/
+
+        vertx_cnt += 3;
+        face_cnt++;
+
+
         if (mode == Wire)
         {
             bresenham(v1, v2);
@@ -64,8 +70,10 @@ void Pipeline::drawIndex(RenderMode mode, maincamera* camera)
 		// back face culling
 		if (!backFaceCulling(mode, camera->pos, v1.posM2W, v2.posM2W, v3.posM2W)) continue;
 		// cliping
-		if (lineCliping(v1, v2) || lineCliping(v1, v3) || lineCliping(v2, v3)) continue;
-		// perspective
+        lineCliping(v1, v2);
+        lineCliping(v1, v3);
+        lineCliping(v2, v3);
+        // perspective
 		perspective(v1);
 		perspective(v2);
 		perspective(v3);
@@ -73,6 +81,9 @@ void Pipeline::drawIndex(RenderMode mode, maincamera* camera)
         v1.posV2P = viewPortMatrix * v1.posV2P;
         v2.posV2P = viewPortMatrix * v2.posV2P;
         v3.posV2P = viewPortMatrix * v3.posV2P;
+
+		vertx_cnt+=3;
+		face_cnt++;
 
         if (mode == Wire)
         {
@@ -115,55 +126,83 @@ void Pipeline::perspective(V2F& target)
     target.posV2P.z = (target.posV2P.z + 1.0f) * 0.5f;
 }
 
-bool Pipeline::lineCliping(const V2F& from, const V2F& to)
+void Pipeline::lineCliping(V2F& from, V2F& to)
 {
     // return whether the line is totally outside or not.
     float vMin = -from.posV2P.w, vMax = from.posV2P.w;
-    float x1 = from.posV2P.x, y1 = from.posV2P.y;
-    float x2 = to.posV2P.x, y2 = to.posV2P.y;
+    float m = 0.f;
 
-    int tmp = 0;
-    int outcode1 = 0, outcode2 = 0;
+    // 边界区域码
+    const int LeftBitCode = 0x1;
+    const int RightBitCode = 0x2;
+    const int BottomBitCode = 0x4;
+    const int TopBitCode = 0x8;
 
-    // outcode1 calculation.
-    tmp = (y1 > vMax) ? 1 : 0;
-    tmp <<= 3;
-    outcode1 |= tmp;
-    tmp = (y1 < vMin) ? 1 : 0;
-    tmp <<= 2;
-    outcode1 |= tmp;
-    tmp = (x1 > vMax) ? 1 : 0;
-    tmp <<= 1;
-    outcode1 |= tmp;
-    tmp = (x1 < vMin) ? 1 : 0;
-    outcode1 |= tmp;
+    auto encode = [&](V2F pt) {
+        int x = pt.posV2P.x, y = pt.posV2P.y;
+        int tmp = 0;
+        int outcode = 0;
+        tmp = (y > vMax) ? 1 : 0;
+        tmp <<= 3;
+        outcode |= tmp;
+        tmp = (y < vMin) ? 1 : 0;
+        tmp <<= 2;
+        outcode |= tmp;
+        tmp = (x > vMax) ? 1 : 0;
+        tmp <<= 1;
+        outcode |= tmp;
+        tmp = (x < vMin) ? 1 : 0;
+        outcode |= tmp;
+        return outcode;
+    };
+    bool done = 0;
+    while (!done) {
+        int outcode1 = encode(from), outcode2 = encode(to);
 
-    // outcode2 calculation.
-    tmp = (y2 > vMax) ? 1 : 0;
-    tmp <<= 3;
-    outcode2 |= tmp;
-    tmp = (y2 < vMin) ? 1 : 0;
-    tmp <<= 2;
-    outcode2 |= tmp;
-    tmp = (x2 > vMax) ? 1 : 0;
-    tmp <<= 1;
-    outcode2 |= tmp;
-    tmp = (x2 < vMin) ? 1 : 0;
-    outcode2 |= tmp;
+        if (!(outcode1 | outcode2)) {
+            done = 1;
+        }
+        else if (outcode1 & outcode2) {
+            done = 1;
+        }
+        else {
+            bool ex = 0;
+            float weight = 0.f;
+            // 线段与矩形相交或在矩形外, 需进一步测试
+            if (!outcode1) { // 确保在边界外的点是from, 那么在边界内的是to
+                swap(from, to);
+                swap(outcode1, outcode2);
+                ex = 1;
+            }
 
-    if ((outcode1 & outcode2) != 0)
-        return true;
+            if (to.posV2P.x != from.posV2P.x) {
+                m = (to.posV2P.y - from.posV2P.y) / (to.posV2P.x - from.posV2P.x); // 斜率
+            }
 
-    // bounding box judge.
-    Vector2 minPoint, maxPoint;
-    minPoint.x = min(from.posV2P.x, to.posV2P.x);
-    minPoint.y = min(from.posV2P.y, to.posV2P.y);
-    maxPoint.x = max(from.posV2P.x, to.posV2P.x);
-    maxPoint.y = max(from.posV2P.y, to.posV2P.y);
-    if (minPoint.x > vMax || maxPoint.x < vMin || minPoint.y > vMax || maxPoint.y < vMin)
-        return true;
+            // 按左->右->下->上的顺序, 测试边界是否裁剪后线段相交
+            if (outcode1 & LeftBitCode) { // 与左边界相交, 更新from.posV2P到左边界
+                //// 与左边界相交, 则斜率存在
+                weight = (vMin - from.posV2P.x) / (to.posV2P.x - from.posV2P.x);
+            }
+            else if (outcode1 & RightBitCode) { // 与右边界相交, 更新from.posV2P到右边界
+                // 与右边界相交, 则斜率存在
+                weight = (vMax - from.posV2P.x) / (to.posV2P.x - from.posV2P.x);
+            }
+            else if (outcode1 & BottomBitCode) { // 与下边界相交, 更新from.posV2P到下边界
+                weight = (vMin - from.posV2P.y) / (to.posV2P.y - from.posV2P.y);
+            }
+            else if (outcode1 & TopBitCode) { // 与上边界相交, 更新from.posV2P到下边界
+                weight = (vMax - from.posV2P.y) / (to.posV2P.y - from.posV2P.y);
+            }
 
-    return false;
+            from = lerp(from, to, weight);
+
+            if (ex) { // 交换回来
+                swap(from, to);
+                swap(outcode1, outcode2);
+            }
+        }
+    }
 }
 
 bool Pipeline::backFaceCulling(RenderMode mode, Vector3 pos, const Vector4& v1, const Vector4& v2, const Vector4& v3)

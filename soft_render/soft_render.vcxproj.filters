@@ -24,9 +24,6 @@
     <Filter Include="render\control">
       <UniqueIdentifier>{41c67f9e-8830-4fc6-8457-ebf021dc2bcc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="render\tools">
-      <UniqueIdentifier>{194178d6-598d-4b1e-be29-b633897360b9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="render\texture">
       <UniqueIdentifier>{0d9eccff-e428-4af5-8f7b-2f744f7f3627}</UniqueIdentifier>
     </Filter>
@@ -38,6 +35,9 @@
     </Filter>
     <Filter Include="render\modelload">
       <UniqueIdentifier>{0d273c2e-752d-489e-a78d-9aaadfe87b6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render\mesh">
+      <UniqueIdentifier>{194178d6-598d-4b1e-be29-b633897360b9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -71,8 +71,8 @@
     <ClCompile Include="renderroute.cpp">
       <Filter>render\control</Filter>
     </ClCompile>
-    <ClCompile Include="polygon.cpp">
-      <Filter>render\tools</Filter>
+    <ClCompile Include="mesh.cpp">
+      <Filter>render\mesh</Filter>
     </ClCompile>
     <ClCompile Include="texture.cpp">
       <Filter>render\texture</Filter>
@@ -135,8 +135,8 @@
     <ClInclude Include="pipeline.h">
       <Filter>render\control</Filter>
     </ClInclude>
-    <ClInclude Include="polygon.h">
-      <Filter>render\tools</Filter>
+    <ClInclude Include="mesh.h">
+      <Filter>render\mesh</Filter>
     </ClInclude>
     <ClInclude Include="texture.h">
       <Filter>render\texture</Filter>

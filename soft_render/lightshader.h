@@ -30,6 +30,5 @@ public:
 	virtual void setTextureID(int id) { textureID = id; }
 	virtual void setMaterial(Material* m) { material = m; }
 	virtual void setLight(Light* l) { light = l; }
-
 };
 

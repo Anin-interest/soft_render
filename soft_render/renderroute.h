@@ -12,6 +12,10 @@ public:
     void stopIt() { stopped = true; }
     void setFpsZero() { fps = 0; }
     int getFps() { return fps; }
+	int getVertexCount() { return pipeline->getVertexCount(); }
+	int getFaceCount() { return pipeline->getFaceCount(); }
+	void setVertexCountZero() { pipeline->setVertexCountZero(); }
+	void setFaceCountZero() { pipeline->setFaceCountZero(); }
 signals:
     void frameOut(unsigned char* image);
 

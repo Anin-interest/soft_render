@@ -42,5 +42,4 @@ public:
     void operator/=(const float rhs) { if (!equal(rhs, 0.0f)) { x /= rhs; y /= rhs; z /= rhs; } }
     Vector3 operator-() const { return Vector3(-x, -y, -z); }
     Vector3 operator+() const { return *this; }
-    Vector3 operator()(const Vector4& rhs);
 };

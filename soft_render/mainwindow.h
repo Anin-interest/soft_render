@@ -4,7 +4,7 @@
 #include "RenderRoute.h"
 #include "QtCore/QThread"
 #include "QtGui/QImage"
-#include "QtCore/QTimer"
+#include "QtCore/QTime"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -26,7 +26,8 @@ private:
 private:
     Ui::MainWindow* ui;
     QImage* canvas;
-    QTimer* timer;
+    QTime* timer;
 	RenderRoute* loop;
 	QThread* loopThread;
+	int start, end;
 };

@@ -1,5 +1,5 @@
 #pragma once
-#include "polygon.h"
+#include "mesh.h"
 #include "maincamera.h"
 #include "light.h"
 #include <QString>

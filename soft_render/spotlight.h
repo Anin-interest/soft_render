@@ -19,11 +19,9 @@ public:
         Vector3& ambient,
         Vector3& diffuse,
         Vector3& specular) const;
-    virtual void setDirectLight(Vector3 amb, Vector3 diff, Vector3 spec,
-        Vector3 dir) {
+    virtual void setDirectLight(Vector3 amb, Vector3 diff, Vector3 spec, Vector3 dir) {
     }
-    virtual void setPointLight(Vector3 amb, Vector3 diff, Vector3 spec,
-        Vector3 pos, Vector3 atte) {
+    virtual void setPointLight(Vector3 amb, Vector3 diff, Vector3 spec, Vector3 pos, Vector3 atte) {
     }
 
     void setSpotLight(Vector3 amb, Vector3 diff, Vector3 spec,

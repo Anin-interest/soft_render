@@ -101,7 +101,7 @@
     <ClCompile Include="objmodel.cpp" />
     <ClCompile Include="pipeline.cpp" />
     <ClCompile Include="pointlight.cpp" />
-    <ClCompile Include="polygon.cpp" />
+    <ClCompile Include="mesh.cpp" />
     <ClCompile Include="renderroute.cpp" />
     <ClCompile Include="spotlight.cpp" />
     <ClCompile Include="texture.cpp" />
@@ -127,7 +127,7 @@
     <ClInclude Include="objmodel.h" />
     <ClInclude Include="pipeline.h" />
     <ClInclude Include="pointlight.h" />
-    <ClInclude Include="polygon.h" />
+    <ClInclude Include="mesh.h" />
     <ClInclude Include="baseshader.h" />
     <QtMoc Include="renderroute.h" />
     <ClInclude Include="spotlight.h" />
